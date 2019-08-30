@@ -37,7 +37,7 @@ namespace Swagger.Api
             }
             catch (Exception e)
             {
-                throw new ApiException(400, "\n\nPassword del Contenedor erroneo.\n\n" + e.Message);
+                throw new ApiException(400, "\n\nPassword del contenedor erróneo.\n\n" + e.Message);
             }
             finally
             {
@@ -52,7 +52,7 @@ namespace Swagger.Api
             AsymmetricKeyEntry pKey = keypairStore.GetKey(alias);
             ECPrivateKeyParameters privateKey = (ECPrivateKeyParameters)pKey.Key;
 
-            byte[] tmpPayload = ASCIIEncoding.ASCII.GetBytes(payload);
+            byte[] tmpPayload = Encoding.UTF8.GetBytes(payload);
 
             ISigner sign = SignerUtilities.GetSigner("SHA-256withECDSA");
             sign.Init(true, privateKey);
@@ -61,8 +61,8 @@ namespace Swagger.Api
             byte[] signature = sign.GenerateSignature();
 
             byte[] asciiBytes = Hex.Encode(signature);
-            char[] asciiChars = new char[ASCIIEncoding.ASCII.GetCharCount(asciiBytes, 0, asciiBytes.Length)];
-            ASCIIEncoding.ASCII.GetChars(asciiBytes, 0, asciiBytes.Length, asciiChars, 0);
+            char[] asciiChars = new char[Encoding.UTF8.GetCharCount(asciiBytes, 0, asciiBytes.Length)];
+            Encoding.UTF8.GetChars(asciiBytes, 0, asciiBytes.Length, asciiChars, 0);
             string xSignature = new string(asciiChars);
 
             return xSignature;
@@ -107,7 +107,7 @@ namespace Swagger.Api
             signer.BlockUpdate(responseContentBytes, 0, responseContentBytes.Length);
 
             char[] asciiChars = xSignature.ToCharArray();
-            byte[] ascciiBytes = Encoding.ASCII.GetBytes(asciiChars);
+            byte[] ascciiBytes = Encoding.UTF8.GetBytes(asciiChars);
             byte[] signature = Hex.Decode(ascciiBytes);
 
             bool isVerified = signer.VerifySignature(signature);
